@@ -87,29 +87,34 @@ User Question: ${question}`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    const aiResponse = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: modelId,
-        messages: [
-          { role: "system", content: systemInstruction },
-          { role: "user", content: dataMessage }
-        ]
-      }),
-      signal: controller.signal
-    });
+    let aiResponse;
+    let data;
+    try {
+      aiResponse = await fetch(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: modelId,
+          messages: [
+            { role: "system", content: systemInstruction },
+            { role: "user", content: dataMessage }
+          ]
+        }),
+        signal: controller.signal
+      });
 
-    clearTimeout(timeoutId);
+      if (!aiResponse.ok) {
+        return NextResponse.json({ error: "Provider failure" }, { status: 502 });
+      }
 
-    if (!aiResponse.ok) {
-      return NextResponse.json({ error: "Provider failure" }, { status: 502 });
+      data = await aiResponse.json();
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await aiResponse.json();
+    
     let rawOutput = data.choices?.[0]?.message?.content || "{}";
     
     // Parse the JSON output from the model
