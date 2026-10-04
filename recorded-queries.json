@@ -1,0 +1,19 @@
+[
+  {
+    "query": "Who can mentor me in Rust this month?",
+    "expected_members": [
+      "bob-rust-expert.eth"
+    ]
+  },
+  {
+    "query": "Who can help me design a frontend?",
+    "expected_members": [
+      "carol-designer.eth",
+      "grace-frontend.eth"
+    ]
+  },
+  {
+    "query": "Who can help me with quantum physics?",
+    "expected_members": []
+  }
+]
